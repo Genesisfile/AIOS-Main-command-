@@ -521,7 +521,6 @@ const SDK_EXAMPLE_TEST_TS = `
 import { PathfinderClient } from '@Genesisfile/pathfinder-client-sdk';
 
 // IMPORTANT: Replace with your actual API Key from your Pathfinder dashboard
-const API_KEY = 'sk_live_33558800';
 
 async function performVulnerabilityScan() {
   console.log("Initializing Pathfinder SDK and preparing to scan...");
@@ -577,10 +576,7 @@ const fs = require('fs');
 const https = require('https');
 const path = require('path');
 
-const CONFIG = {
-    apiKey: "sk_live_33558800",
-    gateway: "https://api.phoenix.swarm.ai/v1/uplink",
-    hive_id: "CHIMERA_PRIME"
+const CONFIG = {p
 };
 
 // --- TERMINAL VISUALS ---
