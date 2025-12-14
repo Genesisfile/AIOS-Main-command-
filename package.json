@@ -1,0 +1,41 @@
+{
+  "name": "aios-command-interface",
+  "version": "1.0.0",
+  "description": "SwarmAI Sovereign Dashboard and Phoenix API Interface",
+  "main": "index.tsx",
+  "dependencies": {
+    "@google/genai": "^1.33.0",
+    "axios": "^1.6.2",
+    "jszip": "^3.10.1",
+    "lucide-react": "^0.560.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "recharts": "^3.5.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/node": "^20.0.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "build-api": "tsc -p tsconfig.api.json",
+    "deploy": "npm run build && firebase deploy"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
