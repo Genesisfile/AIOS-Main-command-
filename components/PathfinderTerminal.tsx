@@ -21,21 +21,21 @@ const https = require('https');
 const path = require('path');
 
 const CONFIG = {
-    apiKey: "sk_live_33558800",
-    gateway: "https://api.phoenix.swarm.ai/v1/uplink",
-    hive_id: "CHIMERA_PRIME"
+    apiKey: process.env.VITE_PHOENIX_API_KEY,
+    gateway: process.env.VITE_PHOENIX_GATEWAY,
+    hive_id: process.env.VITE_PHOENIX_HIVE_ID
 };
 
 // --- TERMINAL VISUALS ---
 const C = {
-    Reset: "\\x1b[0m",
-    Bright: "\\x1b[1m",
-    Green: "\\x1b[32m",
-    Cyan: "\\x1b[36m",
-    Red: "\\x1b[31m",
-    Yellow: "\\x1b[33m",
-    Dim: "\\x1b[2m",
-    Purple: "\\x1b[35m"
+    Reset: "\\\\x1b[0m",
+    Bright: "\\\\x1b[1m",
+    Green: "\\\\x1b[32m",
+    Cyan: "\\\\x1b[36m",
+    Red: "\\\\x1b[31m",
+    Yellow: "\\\\x1b[33m",
+    Dim: "\\\\x1b[2m",
+    Purple: "\\\\x1b[35m"
 };
 
 const log = (msg, type = 'INFO') => {
@@ -171,7 +171,7 @@ uplink().catch(e => {
 `;
 
 const PathfinderTerminal: React.FC<PathfinderTerminalProps> = ({ isOpen, onClose }) => {
-  const [apiKey, setApiKey] = useState('sk_live_33558800');
+  const [apiKey, setApiKey] = useState(import.meta.env.VITE_PHOENIX_API_KEY || '');
   const [logs, setLogs] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [activeTab, setActiveTab] = useState<'SCAN' | 'EXPORT' | 'UPLINK' | 'VERIFY'>('UPLINK');
@@ -202,7 +202,7 @@ const PathfinderTerminal: React.FC<PathfinderTerminalProps> = ({ isOpen, onClose
     const timestamp = new Date().toLocaleTimeString();
     const prefix = type === 'INFO' ? '[INFO]' : type === 'SUCCESS' ? '[SUCCESS]' : type === 'SHELL' ? '[SHELL]' : '[ERROR]';
     const colorClass = type === 'INFO' ? 'text-gray-400' : type === 'SUCCESS' ? 'text-neon-green' : type === 'SHELL' ? 'text-neon-cyan' : 'text-neon-red';
-    setLogs(prev => [...prev, `<span class="text-gray-600 font-mono text-[10px] mr-2">${timestamp}</span><span class="${colorClass}">${prefix} ${msg}</span>`]);
+    setLogs(prev => [...prev, \`<span class="text-gray-600 font-mono text-[10px] mr-2">\${timestamp}</span><span class="\${colorClass}">\${prefix} \${msg}</span>\`]);
   };
 
   const handleDownloadUplink = () => {
@@ -237,14 +237,14 @@ const PathfinderTerminal: React.FC<PathfinderTerminalProps> = ({ isOpen, onClose
       
       setCommandInput("");
       
-      addLog(`Sending directive to Uplink: "${cmd}"`, 'SHELL');
+      addLog(\`Sending directive to Uplink: "\${cmd}"\`, 'SHELL');
       
       // Simulation of sending command to remote
       setTimeout(() => {
           if (cmd === 'ls') {
-              addLog("drwxr-xr-x node_modules\n-rw-r--r-- package.json\n-rw-r--r-- pathfinder_uplink.js", 'INFO');
+              addLog("drwxr-xr-x node_modules\\n-rw-r--r-- package.json\\n-rw-r--r-- pathfinder_uplink.js", 'INFO');
           } else if (cmd.startsWith('git status')) {
-              addLog("On branch main\nYour branch is up to date with 'origin/main'.\n\nnothing to commit, working tree clean", 'INFO');
+              addLog("On branch main\\nYour branch is up to date with 'origin/main'.\\n\\nnothing to commit, working tree clean", 'INFO');
           } else if (cmd.includes('gcloud container clusters get-credentials')) {
               addLog("Fetching cluster endpoint and auth data...", 'INFO');
               setTimeout(() => {
@@ -252,7 +252,7 @@ const PathfinderTerminal: React.FC<PathfinderTerminalProps> = ({ isOpen, onClose
                  addLog("Context switched to: gke_clu-481110_us-central1_autopilot-cluster-1", 'INFO');
               }, 600);
           } else {
-              addLog(`Command executed. (PID: ${Math.floor(Math.random()*9000)+1000})`, 'SUCCESS');
+              addLog(\`Command executed. (PID: \${Math.floor(Math.random()*9000)+1000})\`, 'SUCCESS');
           }
       }, 600);
   };
@@ -260,7 +260,7 @@ const PathfinderTerminal: React.FC<PathfinderTerminalProps> = ({ isOpen, onClose
   const handleScan = async () => {
     setIsProcessing(true);
     addLog("--- STARTING VULNERABILITY SCAN ---", 'INFO');
-    addLog(`TARGET: Production Web Server`, 'INFO');
+    addLog(\`TARGET: Production Web Server\`, 'INFO');
     
     try {
         const result = await PathfinderClient.scan(apiKey, {
@@ -269,15 +269,15 @@ const PathfinderTerminal: React.FC<PathfinderTerminalProps> = ({ isOpen, onClose
             assetType: 'NETWORK_MAP'
         });
         
-        addLog(`SCAN COMPLETE. ID: ${result.scanId}`, 'SUCCESS');
+        addLog(\`SCAN COMPLETE. ID: \${result.scanId}\`, 'SUCCESS');
         if (result.findings.length > 0) {
-            addLog(`DETECTED ${result.findings.length} VULNERABILITIES:`, 'ERROR');
+            addLog(\`DETECTED \${result.findings.length} VULNERABILITIES:\`, 'ERROR');
             result.findings.forEach(f => {
-                 addLog(`[${f.severity}] ${f.id}: ${f.description}`, 'INFO');
+                 addLog(\`[\${f.severity}] \${f.id}: \${f.description}\`, 'INFO');
             });
         }
     } catch (e: any) {
-        addLog(`SCAN FAILED: ${e.message}`, 'ERROR');
+        addLog(\`SCAN FAILED: \${e.message}\`, 'ERROR');
     } finally {
         setIsProcessing(false);
     }
@@ -295,21 +295,21 @@ const PathfinderTerminal: React.FC<PathfinderTerminalProps> = ({ isOpen, onClose
             baseVersion: "v4.2.0"
         });
         
-        addLog(`EXPORT SUCCESSFUL. BUNDLE READY.`, 'SUCCESS');
-        addLog(`ID: ${result.exportId}`, 'INFO');
+        addLog(\`EXPORT SUCCESSFUL. BUNDLE READY.\`, 'SUCCESS');
+        addLog(\`ID: \${result.exportId}\`, 'INFO');
         
         const jsonString = JSON.stringify(result.integrationManifest, null, 2);
-        const codeBlock = `
+        const codeBlock = \`
 <div class="mt-2 mb-2 p-3 bg-neon-purple/5 border border-neon-purple/50 rounded-sm relative group">
   <div class="absolute top-0 right-0 bg-neon-purple text-black text-[9px] px-2 py-0.5 font-bold uppercase">Builder Config</div>
-  <pre class="text-[10px] font-mono text-neon-purple whitespace-pre-wrap">${jsonString}</pre>
+  <pre class="text-[10px] font-mono text-neon-purple whitespace-pre-wrap">\${jsonString}</pre>
 </div>
-        `;
+        \`;
         setLogs(prev => [...prev, codeBlock]);
-        addLog(`PACKET TRANSMITTED. READY FOR INSTANT INJECTION.`, 'SUCCESS');
+        addLog(\`PACKET TRANSMITTED. READY FOR INSTANT INJECTION.\`, 'SUCCESS');
 
     } catch (e: any) {
-        addLog(`EXPORT FAILED: ${e.message}`, 'ERROR');
+        addLog(\`EXPORT FAILED: \${e.message}\`, 'ERROR');
     } finally {
         setIsProcessing(false);
     }
@@ -319,18 +319,18 @@ const PathfinderTerminal: React.FC<PathfinderTerminalProps> = ({ isOpen, onClose
       if (!verifyEndpoint || !verifyKey) return;
       setIsProcessing(true);
       addLog("--- INITIATING UPLINK HANDSHAKE ---", 'INFO');
-      addLog(`RESOLVING: ${verifyEndpoint.replace('https://', '')}`, 'INFO');
+      addLog(\`RESOLVING: \${verifyEndpoint.replace('https://', '')}\`, 'INFO');
       
       try {
           const result = await PathfinderClient.verifyUplink(verifyEndpoint, verifyKey);
           
-          addLog(`CONNECTION ESTABLISHED. LATENCY: ${result.latency}`, 'SUCCESS');
-          addLog(`NODE ID: ${result.nodeId}`, 'INFO');
-          addLog(`TIME REMAINING: ${result.expiry}`, 'INFO');
-          addLog(`INTEGRITY CHECK: ${result.integrity}`, 'SUCCESS');
+          addLog(\`CONNECTION ESTABLISHED. LATENCY: \${result.latency}\`, 'SUCCESS');
+          addLog(\`NODE ID: \${result.nodeId}\`, 'INFO');
+          addLog(\`TIME REMAINING: \${result.expiry}\`, 'INFO');
+          addLog(\`INTEGRITY CHECK: \${result.integrity}\`, 'SUCCESS');
           
       } catch (e: any) {
-          addLog(`HANDSHAKE FAILED: ${e.message}`, 'ERROR');
+          addLog(\`HANDSHAKE FAILED: \${e.message}\`, 'ERROR');
       } finally {
           setIsProcessing(false);
       }
@@ -367,21 +367,21 @@ const PathfinderTerminal: React.FC<PathfinderTerminalProps> = ({ isOpen, onClose
                 
                 <button 
                     onClick={() => setActiveTab('UPLINK')}
-                    className={`text-left p-3 rounded-sm border transition-all duration-200 flex items-center gap-2 ${activeTab === 'UPLINK' ? 'bg-neon-purple/20 border-neon-purple text-white' : 'border-transparent text-gray-400 hover:bg-white/5'}`}
+                    className={\`text-left p-3 rounded-sm border transition-all duration-200 flex items-center gap-2 \${activeTab === 'UPLINK' ? 'bg-neon-purple/20 border-neon-purple text-white' : 'border-transparent text-gray-400 hover:bg-white/5'}\`}
                 >
                     <Wifi className="w-4 h-4" /> Uplink Protocol
                 </button>
 
                 <button 
                     onClick={() => setActiveTab('SCAN')}
-                    className={`text-left p-3 rounded-sm border transition-all duration-200 flex items-center gap-2 ${activeTab === 'SCAN' ? 'bg-neon-purple/20 border-neon-purple text-white' : 'border-transparent text-gray-400 hover:bg-white/5'}`}
+                    className={\`text-left p-3 rounded-sm border transition-all duration-200 flex items-center gap-2 \${activeTab === 'SCAN' ? 'bg-neon-purple/20 border-neon-purple text-white' : 'border-transparent text-gray-400 hover:bg-white/5'}\`}
                 >
                     <Shield className="w-4 h-4" /> Vulnerability Scan
                 </button>
                 
                 <button 
                     onClick={() => setActiveTab('EXPORT')}
-                    className={`text-left p-3 rounded-sm border transition-all duration-200 flex items-center gap-2 ${activeTab === 'EXPORT' ? 'bg-neon-purple/20 border-neon-purple text-white' : 'border-transparent text-gray-400 hover:bg-white/5'}`}
+                    className={\`text-left p-3 rounded-sm border transition-all duration-200 flex items-center gap-2 \${activeTab === 'EXPORT' ? 'bg-neon-purple/20 border-neon-purple text-white' : 'border-transparent text-gray-400 hover:bg-white/5'}\`}
                 >
                     <Upload className="w-4 h-4" /> System Export
                 </button>
@@ -391,7 +391,7 @@ const PathfinderTerminal: React.FC<PathfinderTerminalProps> = ({ isOpen, onClose
                 <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Network Diagnostics</div>
                 <button 
                     onClick={() => setActiveTab('VERIFY')}
-                    className={`text-left p-3 rounded-sm border transition-all duration-200 flex items-center gap-2 ${activeTab === 'VERIFY' ? 'bg-neon-purple/20 border-neon-purple text-white' : 'border-transparent text-gray-400 hover:bg-white/5'}`}
+                    className={\`text-left p-3 rounded-sm border transition-all duration-200 flex items-center gap-2 \${activeTab === 'VERIFY' ? 'bg-neon-purple/20 border-neon-purple text-white' : 'border-transparent text-gray-400 hover:bg-white/5'}\`}
                 >
                     <Radio className="w-4 h-4" /> Verify Uplink
                 </button>
@@ -455,7 +455,7 @@ const PathfinderTerminal: React.FC<PathfinderTerminalProps> = ({ isOpen, onClose
 
                     {activeTab === 'SCAN' && (
                         <div className="text-center z-10">
-                            <Shield className={`w-16 h-16 mx-auto mb-4 ${isProcessing ? 'text-neon-purple animate-pulse' : 'text-gray-500'}`} />
+                            <Shield className={\`w-16 h-16 mx-auto mb-4 \${isProcessing ? 'text-neon-purple animate-pulse' : 'text-gray-500'}\`} />
                             <h3 className="text-2xl font-bold text-white tracking-widest mb-2">VULNERABILITY SCANNER</h3>
                             <p className="text-gray-400 text-sm max-w-md mx-auto mb-8 font-mono">
                                 Scans target infrastructure for security gaps, misconfigurations, and outdated protocols.
@@ -473,7 +473,7 @@ const PathfinderTerminal: React.FC<PathfinderTerminalProps> = ({ isOpen, onClose
 
                     {activeTab === 'EXPORT' && (
                         <div className="text-center z-10">
-                            <FileCode className={`w-16 h-16 mx-auto mb-4 ${isProcessing ? 'text-neon-purple animate-pulse' : 'text-gray-500'}`} />
+                            <FileCode className={\`w-16 h-16 mx-auto mb-4 \${isProcessing ? 'text-neon-purple animate-pulse' : 'text-gray-500'}\`} />
                             <h3 className="text-2xl font-bold text-white tracking-widest mb-2">CLOUD RUN EXPORT</h3>
                             <p className="text-gray-400 text-sm max-w-md mx-auto mb-8 font-mono">
                                 Generates a self-contained runtime bundle for large-scale Google Cloud Run deployments.
@@ -492,7 +492,7 @@ const PathfinderTerminal: React.FC<PathfinderTerminalProps> = ({ isOpen, onClose
                     {activeTab === 'VERIFY' && (
                         <div className="w-full max-w-lg mx-auto z-10 flex flex-col gap-6">
                             <div className="text-center">
-                                <Activity className={`w-12 h-12 mx-auto mb-4 ${isProcessing ? 'text-neon-green animate-pulse' : 'text-gray-500'}`} />
+                                <Activity className={\`w-12 h-12 mx-auto mb-4 \${isProcessing ? 'text-neon-green animate-pulse' : 'text-gray-500'}\`} />
                                 <h3 className="text-xl font-bold text-white tracking-widest">UPLINK VERIFICATION</h3>
                                 <p className="text-gray-500 text-xs font-mono">Validate connectivity to Sovereign Nodes.</p>
                             </div>
